@@ -26,6 +26,7 @@ from pydantic import BaseModel
 from PIL import Image, ImageDraw
 import pywt
 from skimage import filters
+from modules.compare import compare_fractals
 
 # ─── App ─────────────────────────────────────────────────────────────────────
 
@@ -582,3 +583,34 @@ async def root():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run("uuon_fractal_api_main:app", host="0.0.0.0", port=8080, reload=True)
+
+# ─── Module D · Fractal Comparison ────────────────────────────────
+
+
+@app.post("/v1/analyze/compare")
+async def compare_endpoint(payload: Dict):
+
+    """
+    Compare two fractal metric profiles.
+
+    Does not access renderer.
+    Does not expose engine logic.
+    """
+
+
+    fractal_a = payload.get(
+        "fractal_a",
+        {}
+    )
+
+
+    fractal_b = payload.get(
+        "fractal_b",
+        {}
+    )
+
+
+    return compare_fractals(
+        fractal_a,
+        fractal_b
+    )
