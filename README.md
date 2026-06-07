@@ -8,7 +8,7 @@ Built on research by [UUON Foundation Inc.](https://uuonfoundation.com) · Phill
 
 ## Why This Exists
 
-The [UUON Fractal Engine](https://uuonfoundation.com) is a WebGL2/GLSL renderer whose source is proprietary.
+The **Live Demo:** [uuon-fractal-api Explorer](https://claude.ai/public/artifacts/8e30f036-d6b9-488d-96f4-26341c357b7f is a WebGL2/GLSL renderer whose source is proprietary.
 This API exposes only the **mathematical layer** — fractal dimension measurement, parameter recommendations, and a formula knowledge base — giving developers a fully testable, documented surface without touching the rendering IP.
 
 If the engine is the product, this API is the taste.
