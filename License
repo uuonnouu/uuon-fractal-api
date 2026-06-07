@@ -21,8 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ---
-NOTE: This license applies to the API layer only (uuon_fractal_api_main.py,
+NOTE: This license covers the API layer only (uuon_fractal_api_main.py,
 documentation, and tooling in this repository). The UUON Fractal Engine
-(WebGL2/GLSL renderer) is proprietary software owned by UUON Foundation Inc.
-and is NOT covered by this license. Commercial use of the API requires a
-separate UUON commercial license. Contact: phi1@uuonfoundation.com
+(WebGL2/GLSL renderer) is proprietary and NOT covered by this license.
+Commercial API use requires a separate UUON license: phi1@uuonfoundation.com
