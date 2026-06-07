@@ -1,6 +1,6 @@
 """
 uuon-fractal-api · tests/test_api.py
-UUON Foundation Inc. · phi1@uuonfoundation.com
+UUON Foundation Inc. 
 
 Run: pip install pytest httpx && pytest tests/test_api.py -v
 
