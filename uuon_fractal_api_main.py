@@ -93,7 +93,7 @@ def _check_rate(key: str, limit: int, window: int = 86400) -> bool:
     return True
 
 async def _gate(request: Request, x_uuon_key: Optional[str] = Header(None)) -> str:
-        key = x_uuon_key or f"ip:{request.client.host if request.client else 'test-client'}"
+    key = x_uuon_key or f"ip:{request.client.host if request.client else 'test-client'}"
     limit = 500 if x_uuon_key else 20
     if not _check_rate(key, limit):
         raise HTTPException(429, detail={
