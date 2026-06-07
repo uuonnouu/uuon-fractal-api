@@ -1,15 +1,20 @@
 # uuon-fractal-api
 
 **Mathematical fractal analysis + parameter advisory API.**  
-Companion to [uuon-cloud-api](https://github.com/uuon-foundation/uuon-cloud-api).  
+Companion to [`uuon-cloud-api`](https://github.com/uuonnouu).  
 Built on research by [UUON Foundation Inc.](https://uuonfoundation.com) · Phillip A. Ruiz III
+
+**Live Demo:** [uuon-fractal-api Explorer](https://claude.ai/public/artifacts/a0e0dae9-ddb6-46c8-84c2-cac796913707)  
+**Repo:** [github.com/uuonnouu/uuon-fractal-api](https://github.com/uuonnouu/uuon-fractal-api)
 
 -----
 
 ## Why This Exists
 
-The **Live Demo:** [uuon-fractal-api Explorer](https://claude.ai/public/artifacts/8e30f036-d6b9-488d-96f4-26341c357b7f9) is a WebGL2/GLSL renderer whose source is proprietary.
-This API exposes only the **mathematical layer** — fractal dimension measurement, parameter recommendations, and a formula knowledge base — giving developers a fully testable, documented surface without touching the rendering IP.
+The [UUON Fractal Engine](https://uuonfoundation.com) is a WebGL2/GLSL renderer
+whose source is proprietary. This API exposes only the **mathematical layer** —
+fractal dimension measurement, parameter recommendations, and a formula knowledge
+base — giving developers a fully testable surface without touching the rendering IP.
 
 If the engine is the product, this API is the taste.
 
@@ -19,19 +24,19 @@ If the engine is the product, this API is the taste.
 
 ```mermaid
 graph TD
-    USERS["👥 Public Consumers<br/>Developers · Researchers · Artists"]
-    GW["🔀 API Gateway<br/>/v1/* · Rate limiting · API key auth · CORS"]
-    A["📐 Module A · Analyzer<br/>/v1/analyze/*<br/>Box-counting · Wavelet · Lacunarity"]
-    B["🎛 Module B · Advisor<br/>/v1/params/*<br/>Text → parameter sets"]
-    C["📚 Module C · Knowledge<br/>/v1/knowledge/*<br/>Formulas · Algorithms · Coloring modes"]
-    SB["🧪 Sandbox<br/>/sandbox<br/>Zero-config browser demo"]
-    DB["🗄 Data Layer<br/>Preset registry · Analysis labels · Knowledge index"]
-    ENG["🔒 UUON Engine<br/>WebGL2 / GLSL · Client-side only<br/>NOT exposed by this API"]
+    USERS["👥 Public Consumers\nDevelopers · Researchers · Artists"]
+    GW["🔀 API Gateway\n/v1/* · Rate limiting · API key auth"]
+    A["📐 Module A · Analyzer\n/v1/analyze/*\nBox-counting · Wavelet · Lacunarity"]
+    B["🎛 Module B · Advisor\n/v1/params/*\nText → parameter sets"]
+    C["📚 Module C · Knowledge\n/v1/knowledge/*\nFormulas · Algorithms · Coloring modes"]
+    SB["🧪 Sandbox\n/sandbox · Zero-config browser demo"]
+    DB["🗄 Data Layer\nPreset registry · Analysis labels"]
+    ENG["🔒 UUON Engine\nWebGL2 / GLSL · Local only\nNOT exposed by this API"]
 
     USERS --> GW
     GW --> A & B & C & SB
     A & B & C --> DB
-    DB -.->|"API boundary<br/>nothing below is exposed"| ENG
+    DB -.->|API boundary| ENG
 
     style ENG fill:#1a1a1a,stroke:#444,color:#555
     style GW  fill:#2a2a1a,stroke:#c8a96e,color:#c8a96e
@@ -46,18 +51,15 @@ graph TD
 
 ## Quick Start (under 60 seconds)
 
-### Docker (recommended)
+### Docker
 
 ```bash
-git clone https://github.com/uuon-foundation/uuon-fractal-api
+git clone https://github.com/uuonnouu/uuon-fractal-api
 cd uuon-fractal-api
 docker compose up
 ```
 
-Open **<http://localhost:8080/sandbox>** — live demo, no key required.  
-Interactive docs at **<http://localhost:8080/docs>**.
-
-**Preset catalog:** [SHOWCASE.md](./SHOWCASE.md) · [presets.json](./presets.json)
+Docs at **<http://localhost:8080/docs>** · Sandbox at **<http://localhost:8080/sandbox>**
 
 ### Python direct
 
@@ -66,10 +68,12 @@ pip install -r requirements.txt
 python uuon_fractal_api_main.py
 ```
 
-### Replit
+### Test it
 
-Fork the Replit template → Run.  
-`.replit` and `requirements.txt` are pre-configured.
+```bash
+pip install pytest httpx
+pytest tests/test_api.py -v
+```
 
 -----
 
@@ -77,79 +81,46 @@ Fork the Replit template → Run.
 
 ### Module A · Fractal Analyzer
 
-Accepts any image (PNG/JPEG as base64). Returns fractal dimension metrics using three methods plus a weighted ensemble.
-
 ```bash
-# Analyze an image
 curl -X POST http://localhost:8080/v1/analyze/full \
   -H "Content-Type: application/json" \
   -d '{"image": "<base64>", "methods": ["box_counting","wavelet","lacunarity"], "ensemble": true}'
 ```
 
-**Response (abbreviated):**
-
-```json
-{
-  "results": {
-    "box_counting": { "Df": 1.743, "r_squared": 0.991 },
-    "wavelet":      { "Df": 1.761, "energy_ratio": 0.887 },
-    "lacunarity":   { "mean_lacunarity": 0.285, "heterogeneity": "moderate" },
-    "ensemble":     { "Df": 1.754, "confidence": 0.94 }
-  }
-}
-```
+Returns fractal dimension Df with confidence score across three methods.
 
 **Endpoints**
 
 ```
-POST /v1/analyze/full        — All methods + ensemble
-POST /v1/analyze/dimension   — Box-counting only
-POST /v1/analyze/lacunarity  — Lacunarity only
-GET  /v1/analyze/methods     — Method catalog with formulas
+POST /v1/analyze/full       — All methods + weighted ensemble
+POST /v1/analyze/dimension  — Box-counting only
+POST /v1/analyze/lacunarity — Lacunarity only
+GET  /v1/analyze/methods    — Method catalog with formulas
 ```
 
 -----
 
 ### Module B · Parameter Advisor
 
-Natural language description → UUON engine parameter set. Exposes parameter names and ranges — no GLSL, no rendering math.
-
 ```bash
 curl -X POST http://localhost:8080/v1/params/recommend \
   -H "Content-Type: application/json" \
-  -d '{"description": "dark organic spiral, coloring book ready", "constraints": {"coloring_book_mode": true}}'
+  -d '{"description": "dark organic spiral coloring book", "constraints": {"coloring_book_mode": true}}'
 ```
 
-**Response (abbreviated):**
-
-```json
-{
-  "recommended_parameters": {
-    "generator": 5,
-    "generator_name": "sin(z) + c",
-    "coloring_mode": 8,
-    "coloring_mode_name": "Distance estimate",
-    "contrast": 1.2
-  },
-  "confidence": 0.81,
-  "style_match": ["dark","organic","coloring_book"]
-}
-```
+Returns UUON engine parameter set from plain language description.
 
 **Endpoints**
 
 ```
-POST /v1/params/recommend   — Text description → parameter set
-GET  /v1/params/schema      — Full schema with types, ranges, valid values
-POST /v1/params/validate    — Check if a parameter set is valid
-GET  /v1/params/presets     — Named preset registry
+POST /v1/params/recommend  — Text → parameter set
+GET  /v1/params/schema     — Full schema, ranges, valid values
+POST /v1/params/validate   — Validate a parameter set
 ```
 
 -----
 
 ### Module C · Knowledge Base
-
-Queryable index of UUON fractal knowledge — generator formulas, coloring mode descriptions, dimension algorithm catalog.
 
 ```bash
 curl http://localhost:8080/v1/knowledge/generators/5
@@ -161,7 +132,7 @@ curl http://localhost:8080/v1/knowledge/coloring-modes
 
 ### Sandbox
 
-Zero-config browser demo. Generates a synthetic Mandelbrot image server-side, runs the full analysis pipeline, renders results live. No API key required.
+Zero-config browser demo. No API key required.
 
 ```
 GET /sandbox
@@ -169,47 +140,52 @@ GET /sandbox
 
 -----
 
-## Licensing
+## Testing
 
-|Tier      |Requests |Key Required     |Commercial Use|
-|----------|---------|-----------------|--------------|
-|Free      |20/day   |No               |No            |
-|Explorer  |500/day  |Yes (free signup)|No            |
-|Commercial|Unlimited|Yes (paid)       |Yes           |
+```bash
+pip install pytest httpx Pillow numpy
+pytest tests/test_api.py -v
+```
 
-Attribution required on all free-tier derivative works.  
-Contact for commercial license: **[phi1@uuonfoundation.com](mailto:phi1@uuonfoundation.com)**
+Covers all three modules — 20+ tests across analyzers, advisor, knowledge base,
+rate limiting, sandbox, and attribution.
 
 -----
 
-## ML Value
+## Licensing
 
-Every API call accumulates structured data usable as ML training labels:
+|Tier      |Requests |Key        |Commercial|
+|----------|---------|-----------|----------|
+|Free      |20/day   |No         |No        |
+|Explorer  |500/day  |Free signup|No        |
+|Commercial|Unlimited|Paid       |Yes       |
 
-|Field                       |Use                                             |
-|----------------------------|------------------------------------------------|
-|`df_ensemble`               |Ground-truth fractal dimension per image        |
-|`lacunarity_mean`           |Texture heterogeneity classification label      |
-|`confidence`                |Filters low-quality training samples            |
-|`parameter_set + style_tags`|Semantic style → parameter mapping training data|
-|`coloring_book_score`       |Printability classifier labels                  |
+Contact: **[phi1@uuonfoundation.com](mailto:phi1@uuonfoundation.com)**
+
+-----
+
+## Preset Catalog
+
+**[SHOWCASE.md](./SHOWCASE.md)** — 8 named presets with mathematical descriptions  
+**[presets.json](./presets.json)** — machine-readable parameter sets
 
 -----
 
 ## Contributing
 
-See <CONTRIBUTING.md> for open issues tagged `good first issue`.
+See **[CONTRIBUTING.md](./CONTRIBUTING.md)** — 5 open issues tagged `good first issue`.
 
-The architectural constraint for all contributions: **this API must never expose engine rendering logic.** All modules operate on parameter schemas, image pixel data, or mathematical literature — not GLSL source.
+The hard rule: this API must never expose engine rendering logic. All contributions
+operate on parameter schemas, pixel data, or mathematical literature — not GLSL source.
 
 -----
 
 ## Related
 
-- [`uuon-cloud-api`](https://github.com/uuon-foundation/uuon-cloud-api) — companion cloud API
 - [UUON Fractal Engine](https://uuonfoundation.com) — the WebGL2 renderer this API supports
-- [uuonfoundation.com](https://uuonfoundation.com) — main site
+- [uuon-cloud-api](https://github.com/uuonnouu) — companion cloud API
+- [@uuon.foundation](https://instagram.com/uuon.foundation) — Instagram
 
 -----
 
-*UUON Foundation Inc. · Phillip A. Ruiz III · [phi1@uuonfoundation.com](mailto:phi1@uuonfoundation.com) · @uuon.foundation*
+*UUON Foundation Inc. · Phillip A. Ruiz III · [phi1@uuonfoundation.com](mailto:phi1@uuonfoundation.com)*
