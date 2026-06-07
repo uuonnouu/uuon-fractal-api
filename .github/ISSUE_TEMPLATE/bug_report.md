@@ -12,7 +12,6 @@ e.g. POST /v1/analyze/full
 
 **Request body (redact any real images)**
 ```json
-paste here
 
 ---
 
