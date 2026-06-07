@@ -57,6 +57,8 @@ docker compose up
 Open **<http://localhost:8080/sandbox>** — live demo, no key required.  
 Interactive docs at **<http://localhost:8080/docs>**.
 
+**Preset catalog:** [SHOWCASE.md](./SHOWCASE.md) · [presets.json](./presets.json)
+
 ### Python direct
 
 ```bash
